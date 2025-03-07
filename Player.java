@@ -4,6 +4,7 @@ public class Player implements Runnable {
     private enum State {
        A,B,C;
     }
+
     State state;
 
     public static void main(String[] args) {
