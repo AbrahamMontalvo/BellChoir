@@ -1,5 +1,8 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -49,7 +52,14 @@ public class Tone {
         final AudioFormat af =
             new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
         Tone t = new Tone(af);
-        t.playSong(song);
+        if(args.length == 0){
+            t.playSong(song);
+        }
+        else{
+            t.playSong(loadNotes(args[0]));
+        }
+        
+
     }
 
     private final AudioFormat af;
@@ -58,6 +68,22 @@ public class Tone {
         this.af = af;
     }
 
+    private static List<BellNote> loadNotes(String filename) {
+        List<BellNote> notes = new ArrayList<>();
+        try(final Scanner noteReader = new Scanner(new File(filename))){
+            String[] noteString;
+            while(noteReader.hasNext()){
+                noteString = noteReader.nextLine().split(" ");
+                NoteLength[] reader = new NoteLength[] {null, NoteLength.WHOLE, NoteLength.HALF, null, NoteLength.QUARTER, null, null, null, NoteLength.EIGHTH};
+                notes.add(new BellNote(Note.valueOf(noteString[0]), reader[Integer.parseInt(noteString[1])]));
+            }
+        }
+        catch (IOException e){
+            System.out.println("File not found!"); 
+        }
+        return notes;
+    }
+    
     void playSong(List<BellNote> song) throws LineUnavailableException {
         try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
             line.open();
@@ -92,7 +118,7 @@ enum NoteLength {
     WHOLE(1.0f),
     HALF(0.5f),
     QUARTER(0.25f),
-    EIGTH(0.125f);
+    EIGHTH(0.125f);
 
     private final int timeMs;
 
@@ -108,6 +134,18 @@ enum NoteLength {
 enum Note {
     // REST Must be the first 'Note'
     REST,
+    A3,
+    A3S,
+    B3,
+    C3,
+    C3S,
+    D3,
+    D3S,
+    E3,
+    F3,
+    F3S,
+    G3,
+    G3S,
     A4,
     A4S,
     B4,
@@ -128,7 +166,7 @@ enum Note {
     // Circumference of a circle divided by # of samples
     private static final double step_alpha = (2.0d * Math.PI) / SAMPLE_RATE;
 
-    private final double FREQUENCY_A_HZ = 440.0d;
+    private final double FREQUENCY_A_HZ = 220.0d;
     private final double MAX_VOLUME = 127.0d;
 
     private final byte[] sinSample = new byte[MEASURE_LENGTH_SEC * SAMPLE_RATE];
