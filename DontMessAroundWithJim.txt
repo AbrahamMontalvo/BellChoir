@@ -1,0 +1,40 @@
+C4 1
+C4 1
+A4S 4
+G3S 2
+A4S 2
+F3 4
+F3 4
+C4 2
+A4S 4
+G3S 4
+A4S 4
+A4 2
+C4 1
+REST 1
+C4 4
+C4 4
+A4S 4
+G3S 4
+A4S 4
+A4 4
+C4 2
+A4S 2
+G3S 4
+A4S 4
+A4 4
+F3 4
+F3 4
+C4 2
+A4S 4
+G3S 4
+A4S 4
+A4 4
+A4S 4
+C4 1
+
+
+
+
+
+
