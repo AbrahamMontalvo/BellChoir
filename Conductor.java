@@ -17,15 +17,20 @@ public class Conductor implements Runnable{
     private static List<BellNote> noteArray;
     private List<Note> assignments;
     private Map<Note, Player> playMap;
+    private static Map<Integer, NoteLength> reader;
 
     private static List<BellNote> loadNotes(String filename) {
         List<BellNote> notes = new ArrayList<>();
+        reader = new HashMap<>();
+        reader.put(1, NoteLength.WHOLE);
+        reader.put(2, NoteLength.HALF);
+        reader.put(4, NoteLength.QUARTER);
+        reader.put(8, NoteLength.EIGHTH);
         try(final Scanner noteReader = new Scanner(new File(filename))) {
             String[] noteString;
             while(noteReader.hasNext()){
                 noteString = noteReader.nextLine().split(" ");
-                NoteLength[] reader = new NoteLength[] {null, NoteLength.WHOLE, NoteLength.HALF, null, NoteLength.QUARTER, null, null, null, NoteLength.EIGHTH};
-                notes.add(new BellNote(Note.valueOf(noteString[0]), reader[Integer.parseInt(noteString[1])]));
+                notes.add(new BellNote(Note.valueOf(noteString[0]), reader.get(Integer.parseInt(noteString[1]))));
             }
         }
         catch (IOException e){

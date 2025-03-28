@@ -81,7 +81,7 @@ public class Player implements Runnable {
         final int length = Note.SAMPLE_RATE * ms / 1000;
         line.write(bn.note.sample(), 0, length);
         line.write(Note.REST.sample(), 0, 50);
-        System.out.println("Player # " + t.getName() + " played " + bn.note);
+        System.out.println(t.getName() + " played " + bn.note);
     }
 
     private void doTurn() {
