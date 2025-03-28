@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
@@ -11,55 +10,11 @@ import javax.sound.sampled.SourceDataLine;
 
 public class Tone {
 
-    // Mary had a little lamb
-    private static final List<BellNote> song = new ArrayList<BellNote>() {{
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-            add(new BellNote(Note.F4, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.HALF));
-
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.HALF));
-
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.HALF));
-
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-            add(new BellNote(Note.F4, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-            add(new BellNote(Note.A5, NoteLength.QUARTER));
-            add(new BellNote(Note.G4, NoteLength.QUARTER));
-
-            add(new BellNote(Note.F4, NoteLength.WHOLE));
-        }};
-
     public static void main(String[] args) throws Exception {
         final AudioFormat af =
             new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
         Tone t = new Tone(af);
-        if(args.length == 0){
-            t.playSong(song);
-        }
-        else{
-            t.playSong(loadNotes(args[0]));
-        }
-        
-
+        t.playSong(loadNotes(args[0]));
     }
 
     private final AudioFormat af;
@@ -79,7 +34,7 @@ public class Tone {
             }
         }
         catch (IOException e){
-            System.out.println("File not found!"); 
+            System.out.println(filename + " file not found!"); 
         }
         return notes;
     }
