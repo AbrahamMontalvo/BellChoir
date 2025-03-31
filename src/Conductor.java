@@ -1,3 +1,4 @@
+package src;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,8 +48,7 @@ public class Conductor implements Runnable{
      */
     @Override
     public void run() {
-        final AudioFormat af =
-            new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
+        final AudioFormat af = new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
         try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
             line.open();
             line.start();
@@ -70,10 +70,10 @@ public class Conductor implements Runnable{
     
     public static void main(String[] args) throws Exception {
         if(args.length == 0){
-            Conductor c = new Conductor("BellChoir\\MaryHadALittleLamb.txt");
+            Conductor c = new Conductor("BellChoir\\songs\\MaryHadALittleLamb.txt");
         }
         else{
-            Conductor c = new Conductor(args[0]);
+            Conductor c = new Conductor("BellChoir\\songs\\" + args[0]);
         }
     }
 
