@@ -15,12 +15,34 @@ import javax.sound.sampled.SourceDataLine;
 
 public class Conductor implements Runnable{
 
+    // Thread for Conductor class
     private final Thread t;
+
+    // List for BellNotes of the song playing
     private static List<BellNote> noteArray;
+
+    // List of unique Notes to assign to players
     private List<Note> assignments;
+
+    // Map of Note assignments to their respective players
     private Map<Note, Player> playMap;
+
+    // Used in loadNotes() method for verifying and reading NoteLengths
     private static Map<Integer, NoteLength> reader;
 
+    // Boolean for while loop
+    private volatile boolean playing;
+
+    /**
+     * Used to load BellNotes into the global List variable for playing
+     * 
+     * @param filename
+     * @return notes (list of BellNotes, the song)
+     * @throws IllegalArgumentException (when illegal note is entered)
+     * @throws IOException (when file cannot be found)
+     * @throws NullPointerException (when illegal note length is entered)
+     * @throws EOFException (when file does not contain two entries per line)
+     */
     private static List<BellNote> loadNotes(String filename) throws IllegalArgumentException, IOException, NullPointerException, EOFException{
         List<BellNote> notes = new ArrayList<>();
         reader = new HashMap<>();
@@ -66,16 +88,13 @@ public class Conductor implements Runnable{
                 playMap.get(bn.note).playNote(line, bn);
             }
             line.drain();
-        }
-        catch (LineUnavailableException e){
-            try {
-                for (Note p : playMap.keySet()){
-                    playMap.get(p).stopPlayer();
-                }
-                t.join();
+            for (Note p : playMap.keySet()){
+                playMap.get(p).stopPlayer();
             }
-            catch(InterruptedException d){}
+            t.interrupt();
         }
+        catch (LineUnavailableException e){}
+        catch(InterruptedException d){}
     }
     
     public static void main(String[] args) throws Exception {
@@ -86,6 +105,11 @@ public class Conductor implements Runnable{
         }
     }
 
+    /**
+     * Fills List variable with all unique BellNotes in song, used for giving assignments to Player instances
+     * 
+     * @param e
+     */
     public void getUniqueNotes(List<BellNote> e){
         assignments = new LinkedList<>();
         for (BellNote bn: e){
@@ -95,8 +119,12 @@ public class Conductor implements Runnable{
         }
     }
 
+    /*
+     * Constructor used to verify and load songs
+     */
     Conductor(String filename) {
         t = new Thread(this, "Conductor");
+        playing = true;
         try{
             noteArray = loadNotes(filename);
             this.getUniqueNotes(noteArray);

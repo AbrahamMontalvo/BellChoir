@@ -1,15 +1,11 @@
 package src;
-import java.util.List;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
 public class Player implements Runnable {
     private static final int NUM_TURNS = 5;
 
     // private final State myJob;
-    private final Thread t;
+    private final Thread f;
     private volatile boolean running;
     private boolean myTurn;
     private int turnCount;
@@ -17,13 +13,14 @@ public class Player implements Runnable {
 
     Player(int i, Note assign) {
         turnCount = 1;
-        t = new Thread(this, "Player" + (i+1));
-        t.start();
+        f = new Thread(this, "Player" + (i+1));
+        f.start();
         assignment = assign;
     }
 
     public void stopPlayer() throws InterruptedException {
-        t.join();
+        running = false;
+        f.interrupt();
     }
 
     public void giveTurn() {
@@ -63,31 +60,25 @@ public class Player implements Runnable {
         }
     }
 
-    void playSong(List<BellNote> song) throws LineUnavailableException {
-        final AudioFormat af = new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
-        try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
-            line.open();
-            line.start();
-
-            for (BellNote bn: song) {
-                if(bn.note == assignment){
-                    playNote(line, bn);
-                }
-            }
-            line.drain();
-        }
-    }
+    // void playSong(List<BellNote> song) throws LineUnavailableException {
+    //     final AudioFormat af = new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
+    //     try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
+    //         line.open();
+    //         line.start();
+    //         line.drain();
+    //     }
+    // }
 
     public void playNote(SourceDataLine line, BellNote bn) {
         final int ms = Math.min(bn.length.timeMs(), Note.MEASURE_LENGTH_SEC * 1000);
         final int length = Note.SAMPLE_RATE * ms / 1000;
         line.write(bn.note.sample(), 0, length);
         line.write(Note.REST.sample(), 0, 50);
-        System.out.println(t.getName() + " played " + bn.note);
+        System.out.println(f.getName() + " played " + bn.note);
     }
 
     private void doTurn() {
-        System.out.println("Player[" + t.getName() + "] taking turn " + turnCount);
+        System.out.println("Player[" + f.getName() + "] taking turn " + turnCount);
     }
 
 }
