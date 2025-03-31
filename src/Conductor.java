@@ -1,4 +1,5 @@
 package src;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class Conductor implements Runnable{
     private Map<Note, Player> playMap;
     private static Map<Integer, NoteLength> reader;
 
-    private static List<BellNote> loadNotes(String filename) {
+    private static List<BellNote> loadNotes(String filename) throws IllegalArgumentException, IOException, NullPointerException, EOFException{
         List<BellNote> notes = new ArrayList<>();
         reader = new HashMap<>();
         reader.put(1, NoteLength.WHOLE);
@@ -31,11 +32,20 @@ public class Conductor implements Runnable{
             String[] noteString;
             while(noteReader.hasNext()){
                 noteString = noteReader.nextLine().split(" ");
-                notes.add(new BellNote(Note.valueOf(noteString[0]), reader.get(Integer.parseInt(noteString[1]))));
+                if(noteString.length != 2){
+                    throw new EOFException();
+                }
+                else{
+                    Integer beats = Integer.valueOf(noteString[1]);
+                    if(reader.keySet().contains(beats)){
+                        notes.add(new BellNote(Note.valueOf(noteString[0]), reader.get(beats)));
+                    }
+                    else{
+                        throw new NullPointerException();
+                    } 
+                }
             }
-        }
-        catch (IOException e){
-            System.out.println("File not found!"); 
+            noteReader.close();
         }
         return notes;
     }
@@ -72,9 +82,8 @@ public class Conductor implements Runnable{
         try {
             Conductor c = new Conductor(args[0]);
         } catch (Exception e) {
-            System.out.println("Please enter a song or ensure that your song is in the path.");
+            
         }
-        
     }
 
     public void getUniqueNotes(List<BellNote> e){
@@ -87,17 +96,31 @@ public class Conductor implements Runnable{
     }
 
     Conductor(String filename) {
-        noteArray = loadNotes(filename);
-        this.getUniqueNotes(noteArray);
-        int i = 1;
-        playMap = new HashMap<>();
-        while(assignments.size() > 0){
-            Note tempNote = assignments.removeFirst();
-            Player newPlayer = new Player(i, tempNote);
-            playMap.put(tempNote, newPlayer);
-            i += 1;
-        }
         t = new Thread(this, "Conductor");
-        t.start();
+        try{
+            noteArray = loadNotes(filename);
+            this.getUniqueNotes(noteArray);
+            int i = 1;
+            playMap = new HashMap<>();
+            while(assignments.size() > 0){
+                Note tempNote = assignments.removeFirst();
+                Player newPlayer = new Player(i, tempNote);
+                playMap.put(tempNote, newPlayer);
+                i += 1;
+            }
+            t.start();
+        }
+        catch (EOFException h) {
+            System.out.println("SONG NOT PLAYED: Lines of file submissions should contain exactly 2 entries, where the first entry is the note and the second is the length of said note.");
+        }
+        catch (IOException e){
+            System.out.println("SONG NOT PLAYED: File not found!");
+        }
+        catch (IllegalArgumentException n) {
+            System.out.println("SONG NOT PLAYED: Illegal note entry.");
+        }
+        catch (NullPointerException g) {
+            System.out.println("SONG NOT PLAYED: Illegal note length entry.");
+        }
     }
 }

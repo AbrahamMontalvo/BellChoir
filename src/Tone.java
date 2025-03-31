@@ -1,9 +1,5 @@
 package src;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
@@ -11,33 +7,10 @@ import javax.sound.sampled.SourceDataLine;
 
 public class Tone {
 
-    public static void main(String[] args) throws Exception {
-        final AudioFormat af =
-            new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
-        Tone t = new Tone(af);
-        t.playSong(loadNotes(args[0]));
-    }
-
     private final AudioFormat af;
 
     Tone(AudioFormat af) {
         this.af = af;
-    }
-
-    private static List<BellNote> loadNotes(String filename) {
-        List<BellNote> notes = new ArrayList<>();
-        try(final Scanner noteReader = new Scanner(new File(filename))){
-            String[] noteString;
-            while(noteReader.hasNext()){
-                noteString = noteReader.nextLine().split(" ");
-                NoteLength[] reader = new NoteLength[] {null, NoteLength.WHOLE, NoteLength.HALF, null, NoteLength.QUARTER, null, null, null, NoteLength.EIGHTH};
-                notes.add(new BellNote(Note.valueOf(noteString[0]), reader[Integer.parseInt(noteString[1])]));
-            }
-        }
-        catch (IOException e){
-            System.out.println(filename + " file not found!"); 
-        }
-        return notes;
     }
     
     void playSong(List<BellNote> song) throws LineUnavailableException {

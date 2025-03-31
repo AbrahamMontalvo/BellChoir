@@ -5,12 +5,15 @@
     <property name="songs.dir" value="songs"/>
     <property name="dist.dir" value="dist"/>
     <property name="main-class" value="src.Conductor"/> <!-- Update based on package if needed -->
-    <property name="song.file" value="GoodKingWenceslas.txt"/>
 
     <!-- Initialize directories -->
     <target name="init">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <target name="songarg" unless="song">
+        <property name="song" value="${songs.dir}/MaryHadALittleLamb.txt"/>
     </target>
 
     <!-- Clean build and dist directories -->
@@ -52,12 +55,10 @@
     </target>
 
     <!-- Run the program with a song file argument -->
-    <target name="run" depends="jar, check-args, prepare-songs">
-        <java jar="${dist.dir}/BellChoir.jar" fork="true">
-            <classpath>
-                <pathelement location="${dist.dir}/BellChoir.jar"/>
-            </classpath>
-            <arg value="${songs.dir}/${song.file}"/>
-        </java>
+    <target name="run" depends="jar, songarg">
+      <echo message="Using song file: ${song}" />
+      <java jar="${dist.dir}/BellChoir.jar" fork="true">
+          <arg value="${song}"/>
+      </java>
     </target>
 </project>
