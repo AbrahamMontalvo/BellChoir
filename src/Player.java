@@ -1,6 +1,6 @@
 package src;
 import java.util.List;
-
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
@@ -64,6 +64,7 @@ public class Player implements Runnable {
     }
 
     void playSong(List<BellNote> song) throws LineUnavailableException {
+        final AudioFormat af = new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
         try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
             line.open();
             line.start();

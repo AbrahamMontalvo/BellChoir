@@ -2,28 +2,31 @@
     <!-- Project properties -->
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
+    <property name="songs.dir" value="songs"/>
     <property name="dist.dir" value="dist"/>
-    <property name="main-class" value="BellChoir.Conductor"/>
+    <property name="main-class" value="src.Conductor"/> <!-- Update based on package if needed -->
+    <property name="song.file" value="GoodKingWenceslas.txt"/>
 
+    <!-- Initialize directories -->
     <target name="init">
-      <mkdir dir="${dist}"/>
-      <mkdir dir="${dist}/classes"/>
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${dist.dir}"/>
     </target>
 
-    <target name="run" depends="jar">
-      <java jar="dist/${ant.project.name}.jar" fork="true"/>
-    </target>
-    
-    <!-- Clean the build and dist directories -->
+    <!-- Clean build and dist directories -->
     <target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
-        <delete dir="${dist}"/>
     </target>
 
-    <!-- Compile the Java source files -->
-    <target name="compile">
-        <mkdir dir="${build.dir}"/>
+    <target name="prepare-songs">
+      <copy todir="${dist.dir}">
+          <fileset dir="${songs.dir}" includes="*.txt"/>
+      </copy>
+    </target>
+
+    <!-- Compile Java source files -->
+    <target name="compile" depends="init, prepare-songs">
         <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
             <!-- Uncomment and add any external libraries if needed:
             <classpath>
@@ -35,12 +38,26 @@
 
     <!-- Package the compiled classes into a JAR file -->
     <target name="jar" depends="compile">
-        <mkdir dir="${dist.dir}"/>
         <jar destfile="${dist.dir}/BellChoir.jar" basedir="${build.dir}">
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
             </manifest>
         </jar>
     </target>
-</project>
 
+    <target name="check-args">
+        <echo message="Checking if song file ${songs.dir}/${song.file} exists..." />
+        <available file="${songs.dir}/${song.file}" property="song.exists"/>
+        <fail message="Song file ${songs.dir}/${song.file} not found! Please provide a valid file." unless="song.exists"/>
+    </target>
+
+    <!-- Run the program with a song file argument -->
+    <target name="run" depends="jar, check-args, prepare-songs">
+        <java jar="${dist.dir}/BellChoir.jar" fork="true">
+            <classpath>
+                <pathelement location="${dist.dir}/BellChoir.jar"/>
+            </classpath>
+            <arg value="${songs.dir}/${song.file}"/>
+        </java>
+    </target>
+</project>

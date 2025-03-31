@@ -59,22 +59,22 @@ public class Conductor implements Runnable{
         }
         catch (LineUnavailableException e){
             try {
-                t.join();
                 for (Note p : playMap.keySet()){
                     playMap.get(p).stopPlayer();
                 }
+                t.join();
             }
             catch(InterruptedException d){}
         }
     }
     
     public static void main(String[] args) throws Exception {
-        if(args.length == 0){
-            Conductor c = new Conductor("BellChoir\\songs\\MaryHadALittleLamb.txt");
+        try {
+            Conductor c = new Conductor(args[0]);
+        } catch (Exception e) {
+            System.out.println("Please enter a song or ensure that your song is in the path.");
         }
-        else{
-            Conductor c = new Conductor("BellChoir\\songs\\" + args[0]);
-        }
+        
     }
 
     public void getUniqueNotes(List<BellNote> e){
