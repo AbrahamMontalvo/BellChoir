@@ -1,3 +1,13 @@
+/**
+ * Filename: Player.java
+ * Author: Nate Williams
+ * Editor: Abraham Montalvo
+ * Task: CS-410 Lab 2: Bell Choir
+ * Due Date: April 4, 2025
+ * 
+ * We use this Player class through which the Tone instances are played when we load in a song.
+ */
+
 package src;
 import javax.sound.sampled.SourceDataLine;
 
@@ -6,11 +16,20 @@ public class Player implements Runnable {
 
     // private final State myJob;
     private final Thread f;
+
+    // boolean for running player
     private volatile boolean running;
+
+    // Boolean indicating turn status
     private boolean myTurn;
+
+    // Counter variable for turns taken
     private int turnCount;
+
+    // Note that player is assigned
     private Note assignment;
 
+    // Constructor for Player
     Player(int i, Note assign) {
         turnCount = 1;
         f = new Thread(this, "Player" + (i+1));
@@ -18,11 +37,18 @@ public class Player implements Runnable {
         assignment = assign;
     }
 
+    /**
+     * Stops player thread
+     * @throws InterruptedException
+     */
     public void stopPlayer() throws InterruptedException {
         running = false;
         f.interrupt();
     }
 
+    /**
+     * Acquire turn and play notes
+     */
     public void giveTurn() {
         synchronized (this) {
             if (myTurn) {
@@ -38,6 +64,9 @@ public class Player implements Runnable {
         }
     }
 
+    /**
+     * Runner for thread
+     */
     public void run() {
         running = true;
         synchronized (this) {
@@ -60,15 +89,11 @@ public class Player implements Runnable {
         }
     }
 
-    // void playSong(List<BellNote> song) throws LineUnavailableException {
-    //     final AudioFormat af = new AudioFormat(Note.SAMPLE_RATE, 8, 1, true, false);
-    //     try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
-    //         line.open();
-    //         line.start();
-    //         line.drain();
-    //     }
-    // }
-
+    /**
+     * Plays note
+     * @param line
+     * @param bn
+     */
     public void playNote(SourceDataLine line, BellNote bn) {
         final int ms = Math.min(bn.length.timeMs(), Note.MEASURE_LENGTH_SEC * 1000);
         final int length = Note.SAMPLE_RATE * ms / 1000;
@@ -77,6 +102,9 @@ public class Player implements Runnable {
         System.out.println(f.getName() + " played " + bn.note);
     }
 
+    /**
+     * Allows player to do their turn
+     */
     private void doTurn() {
         System.out.println("Player[" + f.getName() + "] taking turn " + turnCount);
     }

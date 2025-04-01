@@ -1,30 +1,32 @@
+/**
+ * Filename: Tone.java
+ * Author: Nate Williams
+ * Editor: Abraham Montalvo
+ * Task: CS-410 Lab 2: Bell Choir
+ * Due Date: April 4, 2025
+ * 
+ * We use this Tone class to create instances of notes to play when listed in our text files.
+ */
+
 package src;
-import java.util.List;
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
 public class Tone {
 
+    // Part of code provided, necessary for playing music
     private final AudioFormat af;
 
+    // Constructor for Tone
     Tone(AudioFormat af) {
         this.af = af;
     }
-    
-    void playSong(List<BellNote> song) throws LineUnavailableException {
-        try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
-            line.open();
-            line.start();
 
-            for (BellNote bn: song) {
-                playNote(line, bn);
-            }
-            line.drain();
-        }
-    }
-
+    /**
+     * Used initially for testing, but plays a single BellNote when given a line to play
+     * @param line
+     * @param bn
+     */
     private void playNote(SourceDataLine line, BellNote bn) {
         final int ms = Math.min(bn.length.timeMs(), Note.MEASURE_LENGTH_SEC * 1000);
         final int length = Note.SAMPLE_RATE * ms / 1000;
@@ -33,6 +35,7 @@ public class Tone {
     }
 }
 
+// BellNote class that takes a Note and NoteLength
 class BellNote {
     final Note note;
     final NoteLength length;
@@ -43,6 +46,7 @@ class BellNote {
     }
 }
 
+// Enum for number of beats for a BellNote
 enum NoteLength {
     WHOLE(1.0f),
     HALF(0.5f),
@@ -60,6 +64,7 @@ enum NoteLength {
     }
 }
 
+// Enum for sound and note frequency played by a Note
 enum Note {
     // REST Must be the first 'Note'
     REST,
@@ -100,6 +105,7 @@ enum Note {
 
     private final byte[] sinSample = new byte[MEASURE_LENGTH_SEC * SAMPLE_RATE];
 
+    // Constructor for Note, setting Note instances at proper frequency for play
     private Note() {
         int n = this.ordinal();
         if (n > 0) {
@@ -116,6 +122,10 @@ enum Note {
         }
     }
 
+    /**
+     * Used for playing notes
+     * @return sinSample
+     */
     public byte[] sample() {
         return sinSample;
     }

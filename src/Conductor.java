@@ -1,3 +1,13 @@
+/**
+ * Filename: Conductor.java
+ * Author: Nate Williams
+ * Editor: Abraham Montalvo
+ * Task: CS-410 Lab 2: Bell Choir
+ * Due Date: April 4, 2025
+ * 
+ * We use this Conductor class to create and signal Player instances to play the notes listed in our song files.
+ */
+
 package src;
 import java.io.EOFException;
 import java.io.File;
@@ -91,18 +101,14 @@ public class Conductor implements Runnable{
             for (Note p : playMap.keySet()){
                 playMap.get(p).stopPlayer();
             }
-            t.interrupt();
+            System.exit(0);
         }
         catch (LineUnavailableException e){}
         catch(InterruptedException d){}
     }
     
     public static void main(String[] args) throws Exception {
-        try {
-            Conductor c = new Conductor(args[0]);
-        } catch (Exception e) {
-            
-        }
+        Conductor c = new Conductor(args[0]);
     }
 
     /**
@@ -138,15 +144,22 @@ public class Conductor implements Runnable{
             }
             t.start();
         }
+        // Catch for improper formatting
         catch (EOFException h) {
             System.out.println("SONG NOT PLAYED: Lines of file submissions should contain exactly 2 entries, where the first entry is the note and the second is the length of said note.");
         }
+
+        // Catch for nonexistent file
         catch (IOException e){
             System.out.println("SONG NOT PLAYED: File not found!");
         }
+
+        // Catch for bad note
         catch (IllegalArgumentException n) {
             System.out.println("SONG NOT PLAYED: Illegal note entry.");
         }
+
+        // Catch for bad note length
         catch (NullPointerException g) {
             System.out.println("SONG NOT PLAYED: Illegal note length entry.");
         }
