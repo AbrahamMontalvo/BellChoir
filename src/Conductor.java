@@ -146,22 +146,22 @@ public class Conductor implements Runnable{
         }
         // Catch for improper formatting
         catch (EOFException h) {
-            System.out.println("SONG NOT PLAYED: Lines of file submissions should contain exactly 2 entries, where the first entry is the note and the second is the length of said note.");
+            System.err.println("SONG NOT PLAYED: Lines of file submissions should contain exactly 2 entries, where the first entry is the note and the second is the length of said note.");
         }
 
         // Catch for nonexistent file
         catch (IOException e){
-            System.out.println("SONG NOT PLAYED: File not found!");
+            System.err.println("SONG NOT PLAYED: File not found!");
         }
 
         // Catch for bad note
         catch (IllegalArgumentException n) {
-            System.out.println("SONG NOT PLAYED: Illegal note entry.");
+            System.err.println("SONG NOT PLAYED: Illegal note entry.");
         }
 
         // Catch for bad note length
         catch (NullPointerException g) {
-            System.out.println("SONG NOT PLAYED: Illegal note length entry.");
+            System.err.println("SONG NOT PLAYED: Illegal note length entry.");
         }
     }
 }
