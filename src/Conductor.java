@@ -9,6 +9,7 @@
  */
 
 package src;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-public class Conductor implements Runnable{
+public class Conductor implements Runnable {
 
     // Thread for Conductor class
     private final Thread t;
@@ -49,39 +50,39 @@ public class Conductor implements Runnable{
      * @param filename
      * @return notes (list of BellNotes, the song)
      * @throws IllegalArgumentException (when illegal note is entered)
-     * @throws IOException (when file cannot be found)
-     * @throws NullPointerException (when illegal note length is entered)
-     * @throws EOFException (when file does not contain two entries per line)
+     * @throws IOException              (when file cannot be found)
+     * @throws NullPointerException     (when illegal note length is entered)
+     * @throws EOFException             (when file does not contain two entries per
+     *                                  line)
      */
-    private static List<BellNote> loadNotes(String filename) throws IllegalArgumentException, IOException, NullPointerException, EOFException{
+    private static List<BellNote> loadNotes(String filename)
+            throws IllegalArgumentException, IOException, NullPointerException, EOFException {
         List<BellNote> notes = new ArrayList<>();
         reader = new HashMap<>();
         reader.put(1, NoteLength.WHOLE);
         reader.put(2, NoteLength.HALF);
         reader.put(4, NoteLength.QUARTER);
         reader.put(8, NoteLength.EIGHTH);
-        try(final Scanner noteReader = new Scanner(new File(filename))) {
+        try (final Scanner noteReader = new Scanner(new File(filename))) {
             String[] noteString;
-            while(noteReader.hasNext()){
+            while (noteReader.hasNext()) {
                 noteString = noteReader.nextLine().split(" ");
-                if(noteString.length != 2){
+                if (noteString.length != 2) {
                     throw new EOFException();
-                }
-                else{
+                } else {
                     Integer beats = Integer.valueOf(noteString[1]);
-                    if(reader.keySet().contains(beats)){
+                    if (reader.keySet().contains(beats)) {
                         notes.add(new BellNote(Note.valueOf(noteString[0]), reader.get(beats)));
-                    }
-                    else{
+                    } else {
                         throw new NullPointerException();
-                    } 
+                    }
                 }
             }
             noteReader.close();
         }
         return notes;
     }
-    
+
     /**
      * Read in song
      * Create choir
@@ -94,32 +95,37 @@ public class Conductor implements Runnable{
         try (final SourceDataLine line = AudioSystem.getSourceDataLine(af)) {
             line.open();
             line.start();
-            for (BellNote bn: noteArray) {
-                playMap.get(bn.note).giveTurn(line, bn);
+            for (BellNote bn : noteArray) {
+                if (!bn.note.equals(Note.REST)) {
+                    playMap.get(bn.note).giveTurn(line, bn);
+                } else {
+                    Thread.sleep((long) (bn.length.timeMs() * 1000));
+                }
             }
             line.drain();
-            for (Note p : playMap.keySet()){
+            for (Note p : playMap.keySet()) {
                 playMap.get(p).stopPlayer();
             }
             System.exit(0);
+        } catch (LineUnavailableException e) {
+        } catch (InterruptedException d) {
         }
-        catch (LineUnavailableException e){}
-        catch(InterruptedException d){}
     }
-    
+
     public static void main(String[] args) throws Exception {
         Conductor c = new Conductor("songs\\GoodKingWenceslas.txt");
     }
 
     /**
-     * Fills List variable with all unique BellNotes in song, used for giving assignments to Player instances
+     * Fills List variable with all unique BellNotes in song, used for giving
+     * assignments to Player instances
      * 
      * @param e
      */
-    public void getUniqueNotes(List<BellNote> e){
+    public void getUniqueNotes(List<BellNote> e) {
         assignments = new LinkedList<>();
-        for (BellNote bn: e){
-            if(!assignments.contains(bn.note)){
+        for (BellNote bn : e) {
+            if (!assignments.contains(bn.note)) {
                 assignments.add(bn.note);
             }
         }
@@ -131,12 +137,12 @@ public class Conductor implements Runnable{
     Conductor(String filename) {
         t = new Thread(this, "Conductor");
         playing = true;
-        try{
+        try {
             noteArray = loadNotes(filename);
             this.getUniqueNotes(noteArray);
             int i = 1;
             playMap = new HashMap<>();
-            while(assignments.size() > 0){
+            while (assignments.size() > 0) {
                 Note tempNote = assignments.removeFirst();
                 Player newPlayer = new Player(i, tempNote);
                 playMap.put(tempNote, newPlayer);
@@ -146,11 +152,12 @@ public class Conductor implements Runnable{
         }
         // Catch for improper formatting
         catch (EOFException h) {
-            System.err.println("SONG NOT PLAYED: Lines of file submissions should contain exactly 2 entries, where the first entry is the note and the second is the length of said note.");
+            System.err.println(
+                    "SONG NOT PLAYED: Lines of file submissions should contain exactly 2 entries, where the first entry is the note and the second is the length of said note.");
         }
 
         // Catch for nonexistent file
-        catch (IOException e){
+        catch (IOException e) {
             System.err.println("SONG NOT PLAYED: File not found!");
         }
 

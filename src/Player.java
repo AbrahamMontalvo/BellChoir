@@ -9,6 +9,7 @@
  */
 
 package src;
+
 import javax.sound.sampled.SourceDataLine;
 
 public class Player implements Runnable {
@@ -32,13 +33,14 @@ public class Player implements Runnable {
     // Constructor for Player
     Player(int i, Note assign) {
         turnCount = 1;
-        f = new Thread(this, "Player" + (i+1));
+        f = new Thread(this, "Player" + (i + 1));
         f.start();
         assignment = assign;
     }
 
     /**
      * Stops player thread
+     * 
      * @throws InterruptedException
      */
     public void stopPlayer() throws InterruptedException {
@@ -52,7 +54,8 @@ public class Player implements Runnable {
     public void giveTurn(SourceDataLine line, BellNote bn) {
         synchronized (this) {
             if (myTurn) {
-                throw new IllegalStateException("Attempt to give a turn to a player who's hasn't completed the current turn");
+                throw new IllegalStateException(
+                        "Attempt to give a turn to a player who's hasn't completed the current turn");
             }
             myTurn = true;
             notify();
@@ -60,7 +63,8 @@ public class Player implements Runnable {
             while (myTurn) {
                 try {
                     wait();
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
             }
         }
     }
@@ -76,7 +80,8 @@ public class Player implements Runnable {
                 while (!myTurn) {
                     try {
                         wait();
-                    } catch (InterruptedException ignored) {}
+                    } catch (InterruptedException ignored) {
+                    }
                 }
 
                 // My turn!
@@ -92,6 +97,7 @@ public class Player implements Runnable {
 
     /**
      * Plays note
+     * 
      * @param line
      * @param bn
      */

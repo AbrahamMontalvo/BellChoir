@@ -9,6 +9,7 @@
  */
 
 package src;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.SourceDataLine;
 
@@ -23,7 +24,9 @@ public class Tone {
     }
 
     /**
-     * Used initially for testing, but plays a single BellNote when given a line to play
+     * Used initially for testing, but plays a single BellNote when given a line to
+     * play
+     * 
      * @param line
      * @param bn
      */
@@ -56,7 +59,7 @@ enum NoteLength {
     private final int timeMs;
 
     private NoteLength(float length) {
-        timeMs = (int)(length * Note.MEASURE_LENGTH_SEC * 1000);
+        timeMs = (int) (length * Note.MEASURE_LENGTH_SEC * 1000);
     }
 
     public int timeMs() {
@@ -117,13 +120,14 @@ enum Note {
             // Create sinusoidal data sample for the desired frequency
             final double sinStep = freq * step_alpha;
             for (int i = 0; i < sinSample.length; i++) {
-                sinSample[i] = (byte)(Math.sin(i * sinStep) * MAX_VOLUME);
+                sinSample[i] = (byte) (Math.sin(i * sinStep) * MAX_VOLUME);
             }
         }
     }
 
     /**
      * Used for playing notes
+     * 
      * @return sinSample
      */
     public byte[] sample() {
