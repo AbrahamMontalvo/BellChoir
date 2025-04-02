@@ -47,15 +47,16 @@ public class Player implements Runnable {
     }
 
     /**
-     * Acquire turn and play notes
+     * Acquire turn, song line, and play notes
      */
-    public void giveTurn() {
+    public void giveTurn(SourceDataLine line, BellNote bn) {
         synchronized (this) {
             if (myTurn) {
                 throw new IllegalStateException("Attempt to give a turn to a player who's hasn't completed the current turn");
             }
             myTurn = true;
             notify();
+            playNote(line, bn);
             while (myTurn) {
                 try {
                     wait();
@@ -103,7 +104,7 @@ public class Player implements Runnable {
     }
 
     /**
-     * Allows player to do their turn
+     * Prints output that signifies that the Player has taken their turn
      */
     private void doTurn() {
         System.out.println("Player[" + f.getName() + "] taking turn " + turnCount);

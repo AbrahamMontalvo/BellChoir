@@ -95,7 +95,7 @@ public class Conductor implements Runnable{
             line.open();
             line.start();
             for (BellNote bn: noteArray) {
-                playMap.get(bn.note).playNote(line, bn);
+                playMap.get(bn.note).giveTurn(line, bn);
             }
             line.drain();
             for (Note p : playMap.keySet()){
@@ -108,7 +108,7 @@ public class Conductor implements Runnable{
     }
     
     public static void main(String[] args) throws Exception {
-        Conductor c = new Conductor(args[0]);
+        Conductor c = new Conductor("songs\\GoodKingWenceslas.txt");
     }
 
     /**
