@@ -113,7 +113,7 @@ public class Conductor implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
-        Conductor c = new Conductor("songs\\GoodKingWenceslas.txt");
+        Conductor c = new Conductor(args[0]);
     }
 
     /**
